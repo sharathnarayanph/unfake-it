@@ -2215,12 +2215,20 @@
 
 /* Icon */
 
+	
+	.fa-minus-square {
+		color: red;
+	}
+
+	.fa-plus-square {
+		color: green;
+	}
+
 	.icon {
 		text-decoration: none;
 		border-bottom: none;
 		position: relative;
 	}
-
 		.icon:before {
 			-moz-osx-font-smoothing: grayscale;
 			-webkit-font-smoothing: antialiased;
@@ -2533,6 +2541,10 @@
 				border-top: 0;
 			}
 
+			.plus, .minus {
+				width:1% !important;
+			}
+
 /* Button */
 
 	input[type="submit"],
@@ -2750,7 +2762,7 @@
 			line-height: inherit;
 			margin: 0;
 			padding: 0;
-			position: absolute;
+			position: relative;
 			top: 0;
 			font-size: 1em;
 		}
