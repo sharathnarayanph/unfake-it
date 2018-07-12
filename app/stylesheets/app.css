@@ -2542,7 +2542,10 @@
 			}
 
 			.plus, .minus {
-				width:1% !important;
+				width:10% !important;
+			}
+			.plus span, .minus span {
+				padding-left: 1.8em
 			}
 
 /* Button */

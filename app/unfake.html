@@ -22,7 +22,7 @@
 				<p>Sharath Narayan</p>
 			</header>
 			<h2 id="elements" class="align-center">News Feed</h2>
-			<div class="table-wrapper">
+			<div id="newsFeed" class="table-wrapper">
 				<table class="alt">
 					<thead>
 						<tr>
@@ -35,11 +35,79 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td class="plus"><a href="#" class="icon fa-minus-square"><span>&nbsp;&nbsp;&nbsp;123</span></td>
+							<td class="plus">
+								<a href="#" onclick="App.vote(this)" class="icon fa-minus-square">
+									<span>123</span>
+								</a>
+							</td>
 							<td>Politics</td>
-							<td>World is controlled by illuminati</td>
+							<td>
+								<a onclick="App.renderPost(this)" href="#">World is controlled by 
+									illuminati</a>
+							</td>
 							<td>jfaker</td>
-							<td class="minus"><a href="#" class="icon fa-plus-square"><span>&nbsp;&nbsp;&nbsp;23</span></td>
+							<td class="minus">
+								<a href="#" onclick="App.vote(this)" class="icon fa-plus-square">
+									<span>23</span>
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<td class="plus">
+								<a href="#" onclick="App.vote(this)" class="icon fa-minus-square">
+									<span>15</span>
+								</a>
+							</td>
+							<td>Sports</td>
+							<td>Maradona was taking drugs</td>
+							<td>truthtalker</td>
+							<td class="minus">
+								<a href="#" onclick="App.vote(this)" class="icon fa-plus-square">
+									<span>1223</span>
+								</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div id="postFeed" class="table-wrapper">
+				<table class="alt">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Proof</th>
+							<th>Author</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="plus">
+								<a href="#" onclick="App.vote(this)" class="icon fa-minus-square">
+									<span>1</span>
+								</a>
+							</td>
+							<td id="postData"></td>
+							<td id="postAuthor"></td>
+							<td class="minus">
+								<a href="#" onclick="App.vote(this)" class="icon fa-plus-square">
+									<span>3</span>
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<td class="plus">
+								<a href="#" onclick="App.vote(this)" class="icon fa-minus-square">
+									<span>5</span>
+								</a>
+							</td>
+							<td>Related evidence listed</td>
+							<td>truthtalkersptr</td>
+							<td class="minus">
+								<a href="#" onclick="App.vote(this)" class="icon fa-plus-square">
+									<span>12</span>
+								</a>
+							</td>
 						</tr>
 					</tbody>
 				</table>
