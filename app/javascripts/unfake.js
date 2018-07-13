@@ -44,12 +44,67 @@ export function postNews() {
     generateFeed();
 }
 
-export function voteUp(el) {
+export function voteUp(el, postId) {
     el.firstElementChild.textContent++;
+
+    var instance = createNewsFeedInstance();
+    var estimatedGas = 6654755;
+
+    var txnObject = {
+        from: web3.eth.coinbase,
+        gas: estimatedGas
+    }
+
+    instance.voteUp.sendTransaction(postId, el.firstElementChild.textContent,
+         function (error, result) {
+            if (!error) {
+                console.warn(result);
+            }
+            else {
+                console.log("Error");
+            }
+        });
 }
 
-export function voteDown(el) {
+export function votePostUp(el, address) {
     el.firstElementChild.textContent++;
+
+    var txnObject = {
+        from: web3.eth.coinbase,
+        to: address,
+        value: web3.toWei(0.05,'ether')
+    }
+
+    web3.eth.sendTransaction(txnObject, function(error, result) {
+        if(!error) {
+            console.warn('Thank you for your contribution');
+        }
+        else {
+            console.log('Error');
+        }
+    });
+}
+
+export function voteDown(el, postId) {
+    el.firstElementChild.textContent++;
+
+    var instance = createNewsFeedInstance();
+    var estimatedGas = 6654755;
+
+    var txnObject = {
+        from: web3.eth.coinbase,
+        gas: estimatedGas
+    }
+
+    instance.voteDown.sendTransaction(postId, el.firstElementChild.textContent,
+         function (error, result) {
+            if (!error) {
+                console.warn(result);
+            }
+            else {
+                console.log("Error");
+            }
+        });
 }
 
 export function renderPost(el) {
@@ -90,13 +145,13 @@ function generateFeed(dVotes, posts, authors, upvotes, length) {
     });
 }
 
-//Remove extra 0s while converting back from bytes32
 function configureList(result) {
     length = web3.toDecimal(web3.toHex(result[7]));
 
     var regEx = /[0]+$/;
     var content;
 
+    //Remove extra 0s while converting back from bytes32
     for (var i = 0; i < length; i++) {
         for(var j = 0; j < 7; j++) {
             result[j][i] = web3.toAscii(result[j][i].replace(regEx, ""));
@@ -105,22 +160,22 @@ function configureList(result) {
 
     for (var i =0; i < length; i++) {
         content += "<td class=\"plus\">";
-        content += "<a onclick=\"App.voteDown(this" + result[0][i] + ")\" class=\"icon fa-minus-square\">";
+        content += "<a href=\"#\" onclick=\"App.voteDown(this" + i + ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[1][i] + "</span>";
         content += "</a></td>";
         content += "<td>" + result[5][i] + "</td>";
         content += "<td><a onclick=\"App.renderPost(this)\">" + result[6][i] + "</a></td>";
         content += "<td>" + result[3][i] + "</td>";
         content += "<td class=\"minus\">";
-        content += "<a onclick=\"App.voteUp(this" + result[0][i] + ")\" class=\"icon fa-minus-square\">";
+        content += "<a href=\"#\" onclick=\"App.voteUp(this" + i + ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[2][i] + "</span>";
         content += "</a></td>";
-    }
-    
-    if(i == 0) {
-        $('#newsFeedTbl tbody').append(content);
-    }
-    else {
-        $('#newsFeedTbl tr:last').after(content);
+
+        if(i == 0) {
+            $('#newsFeedTbl tbody').append(content);
+        }
+        else {
+            $('#newsFeedTbl tr:last').after(content);
+        }
     }
 }
