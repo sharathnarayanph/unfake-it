@@ -28,6 +28,8 @@ contract NewsFeed {
             newsFeed.authors.push(authors[i]);
             newsFeed.bloomFilters.push(blooms[i]);
         }
+
+        return true;
     }
 
     //For retrieving the news feed. Max limit of 1000 set accd to Solidity constraints
