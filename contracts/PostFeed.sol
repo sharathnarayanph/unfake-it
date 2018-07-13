@@ -8,13 +8,14 @@ contract PostFeed {
         bytes32[] authors;
         bytes32[] authorAddresses;
         bytes32[] bloomFilters;
+        bytes32[] posts;
         uint count;
     }
 
     mapping(bytes32 => Feed) private postFeed;
 
     function addPost(bytes32 postId, bytes32 id, bytes32 dVotes, bytes32 uVotes,
-                     bytes32 author, bytes32 authorAddr, bytes32 bloom)
+                     bytes32 author, bytes32 authorAddr, bytes32 bloom, bytes32 post)
     public
     payable
     returns(bool) {
@@ -24,6 +25,7 @@ contract PostFeed {
         postFeed[postId].authors.push(author);
         postFeed[postId].authorAddresses.push(authorAddr); 
         postFeed[postId].bloomFilters.push(bloom); 
+        postFeed[postId].posts.push(post);
         postFeed[postId].count++; 
 
         return true;
@@ -34,7 +36,7 @@ contract PostFeed {
     payable
     returns(bytes32[1000] ids, bytes32[1000] uVotes, bytes32[1000] dVotes,
             bytes32[1000] authors, bytes32[1000] authAddresses, bytes32[1000] blooms,
-            uint count) {
+            bytes32[1000] posts, uint count) {
         require(postFeed[postId].count != 0x0);
 
         count = postFeed[postId].count;
@@ -46,6 +48,7 @@ contract PostFeed {
             authors[i] = postFeed[postId].authors[i];
             authAddresses[i] = postFeed[postId].authorAddresses[i];
             blooms[i] = postFeed[postId].bloomFilters[i];
+            posts[i] = postFeed[postId].posts[i];
         }                      
     }
 

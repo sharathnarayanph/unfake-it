@@ -1,5 +1,6 @@
 import * as helper from "./helper.js";
-import newsFeedABI from "../res/newsFeed.js";
+//import newsFeedABI from "../res/newsFeed.js";
+//import postFeedABI from "../res/newsFeed.js";
 import $ from "jquery";
 
 export function initApp() {
@@ -41,7 +42,7 @@ export function postNews() {
             }
         });
 
-    generateFeed();
+    generateNewsFeed();
 }
 
 export function voteUp(el, postId) {
@@ -107,11 +108,21 @@ export function voteDown(el, postId) {
         });
 }
 
-export function renderPost(el) {
+export function generatePost(el, postId) {
     $("#newsFeed").hide();
+    $("#addNews").hide();
     $("#postFeed").show();
-    $("#postData").text("Supporting information listed");
-    $("#postAuthor").text("jfakesupptr");
+    
+    var instance = createPostFeedInstance();
+
+    instance.getFeed.call(postId, function (error, result) {
+        if (!error) {
+            renderPostFeed(result);
+        }
+        else {
+            console.log("Error");
+        }
+    });
 }
 
 export function displayFeed() {
@@ -130,14 +141,18 @@ function createNewsFeedInstance() {
     return helper.createContractInstance(JSON.stringify(newsFeedABI.abi), newsFeedABI.address);
 }
 
-function generateFeed(dVotes, posts, authors, upvotes, length) {
+function createPostFeedInstance() {
+    return helper.createContractInstance(JSON.stringify(postFeedABI.abi), postFeedABI.address);
+}
+
+function generateNewsFeed(dVotes, posts, authors, upvotes, length) {
     displayFeed();
 
     var instance = createNewsFeedInstance();
 
     instance.getFeed.call(function (error, result) {
         if (!error) {
-            configureList(result);
+            renderNewsFeed(result);
         }
         else {
             console.log("Error");
@@ -145,7 +160,7 @@ function generateFeed(dVotes, posts, authors, upvotes, length) {
     });
 }
 
-function configureList(result) {
+function renderNewsFeed(result) {
     length = web3.toDecimal(web3.toHex(result[7]));
 
     var regEx = /[0]+$/;
@@ -159,14 +174,14 @@ function configureList(result) {
     }
 
     for (var i =0; i < length; i++) {
-        content += "<td class=\"plus\">";
+        content += "<td class=\"minus\">";
         content += "<a href=\"#\" onclick=\"App.voteDown(this" + i + ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[1][i] + "</span>";
         content += "</a></td>";
         content += "<td>" + result[5][i] + "</td>";
         content += "<td><a onclick=\"App.renderPost(this)\">" + result[6][i] + "</a></td>";
         content += "<td>" + result[3][i] + "</td>";
-        content += "<td class=\"minus\">";
+        content += "<td class=\"plus\">";
         content += "<a href=\"#\" onclick=\"App.voteUp(this" + i + ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[2][i] + "</span>";
         content += "</a></td>";
@@ -176,6 +191,42 @@ function configureList(result) {
         }
         else {
             $('#newsFeedTbl tr:last').after(content);
+        }
+    }
+}
+
+function renderPostFeed(result) {
+    length = web3.toDecimal(web3.toHex(result[7]));
+
+    var regEx = /[0]+$/;
+    var content;
+
+    //Remove extra 0s while converting back from bytes32
+    for (var i = 0; i < length; i++) {
+        for(var j = 0; j < 7; j++) {
+            result[j][i] = web3.toAscii(result[j][i].replace(regEx, ""));
+        }
+    }
+
+    for (var i =0; i < length; i++) {
+        content += "<td class=\"minus\">";
+        content += "<a href=\"#\" onclick=\"App.voteDown(this, " + i + 
+            ")\" class=\"icon fa-minus-square\">";
+        content += "<span>" + result[2][i] + "</span>";
+        content += "</a></td>";
+        content += "<td>" + result[6][i] + "</td>";
+        content += "<td>" + result[3][i] + "</td>";
+        content += "<td class=\"plus\">";
+        content += "<a href=\"#\" onclick=\"App.voteUp(this, " + i + "," + 
+            result[4][i] + ")\" class=\"icon fa-minus-square\">";
+        content += "<span>" + result[1][i] + "</span>";
+        content += "</a></td>";
+
+        if(i == 0) {
+            $('#postFeedTbl tbody').append(content);
+        }
+        else {
+            $('#postFeedTbl tr:last').after(content);
         }
     }
 }
