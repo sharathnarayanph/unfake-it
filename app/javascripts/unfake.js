@@ -1,6 +1,7 @@
 import * as helper from "./helper.js";
 //import newsFeedABI from "../res/newsFeed.js";
 //import postFeedABI from "../res/newsFeed.js";
+import bloomFilter from "./jsHelpers/bloomFilter.js";
 import $ from "jquery";
 
 export function initApp() {
@@ -22,7 +23,11 @@ export function postNews() {
     var id = new Array(helper.hashCode(web3.eth.coinbase + new Date().toLocaleString()));
     var dVotes = new Array("0");
     var uVotes = new Array("0");
-    var bloom = new Array("0");
+    var bloomVal = new bloomFilter.BloomFilter(
+        32 * 256, // number of bits to allocate.
+        16        // number of hash functions.
+    );
+    var bloom = new Array(bloomVal);
 
     var instance = createNewsFeedInstance();
     var estimatedGas = 6654755;
@@ -49,12 +54,16 @@ export function addPost() {
     var post = $("#postContent").value;
     var author = $("#postAuth").value;
     var postId = $("#mainNewsId").value;
-    var bloom = "0";
+    var bloomVal = new bloomFilter.BloomFilter(
+        32 * 256, // number of bits to allocate.
+        16        // number of hash functions.
+    );
+    var bloom = new Array(bloomVal);
     var dVotes = "0";
     var uVotes = "0";
     var authAddr = web3.eth.coinbase;
-    var id = new Array(helper.hashCode(web3.eth.coinbase 
-                + new Date().toLocaleString()));
+    var id = new Array(helper.hashCode(web3.eth.coinbase
+        + new Date().toLocaleString()));
 
     var instance = createPostFeedInstance();
     var estimatedGas = 6654755;
@@ -64,7 +73,7 @@ export function addPost() {
         gas: estimatedGas
     }
 
-    instance.addPost.sendTransaction(postId, id, dVotes, uVotes, author, authAddr, 
+    instance.addPost.sendTransaction(postId, id, dVotes, uVotes, author, authAddr,
         bloom, post, txnObject, function (error, result) {
             if (!error) {
                 console.warn(result);
@@ -78,66 +87,54 @@ export function addPost() {
 }
 
 export function voteUp(el, postId) {
-    el.firstElementChild.textContent++;
+    if (!bloom.test(web3.eth.coinbase)) {
+        el.firstElementChild.textContent++;
 
-    var instance = createNewsFeedInstance();
-    var estimatedGas = 6654755;
+        var instance = createNewsFeedInstance();
+        var estimatedGas = 6654755;
 
-    var txnObject = {
-        from: web3.eth.coinbase,
-        gas: estimatedGas
+        var txnObject = {
+            from: web3.eth.coinbase,
+            gas: estimatedGas
+        }
+
+        instance.voteUp.sendTransaction(postId, el.firstElementChild.textContent,
+            function (error, result) {
+                if (!error) {
+                    console.warn(result);
+                }
+                else {
+                    console.log("Error");
+                }
+            });
     }
-
-    instance.voteUp.sendTransaction(postId, el.firstElementChild.textContent,
-        function (error, result) {
-            if (!error) {
-                console.warn(result);
-            }
-            else {
-                console.log("Error");
-            }
-        });
 }
 
 export function votePostUp(el, address) {
-    el.firstElementChild.textContent++;
+    if (!bloom.test(web3.eth.coinbase)) {
+        el.firstElementChild.textContent++;
 
-    var txnObject = {
-        from: web3.eth.coinbase,
-        to: address,
-        value: web3.toWei(0.05, 'ether')
-    }
-
-    web3.eth.sendTransaction(txnObject, function (error, result) {
-        if (!error) {
-            console.warn('Thank you for your contribution');
+        var txnObject = {
+            from: web3.eth.coinbase,
+            to: address,
+            value: web3.toWei(0.05, 'ether')
         }
-        else {
-            console.log('Error');
-        }
-    });
-}
 
-export function voteDown(el, postId) {
-    el.firstElementChild.textContent++;
-
-    var instance = createNewsFeedInstance();
-    var estimatedGas = 6654755;
-
-    var txnObject = {
-        from: web3.eth.coinbase,
-        gas: estimatedGas
-    }
-
-    instance.voteDown.sendTransaction(postId, el.firstElementChild.textContent,
-        function (error, result) {
+        web3.eth.sendTransaction(txnObject, function (error, result) {
             if (!error) {
-                console.warn(result);
+                console.warn('Thank you for your contribution');
             }
             else {
-                console.log("Error");
+                console.log('Error');
             }
         });
+    }
+}
+
+export function voteDown(el) {
+    if (!bloom.test(web3.eth.coinbase)) {
+        el.firstElementChild.textContent++;
+    }
 }
 
 export function generatePost(el, postId) {
@@ -220,8 +217,14 @@ function renderNewsFeed(result) {
             result[j][i] = web3.toAscii(result[j][i].replace(regEx, ""));
         }
     }
-
+    var color;
     for (var i = 0; i < length; i++) {
+        if(web3.toDecimal(web3.toHex(result[1][i])) <= web3.toDecimal(web3.toHex(result[2][i])))
+            color = "#d4ffd5";
+        else
+            color = "#e0c6c6";
+
+        content += "<tr style=\"background-color:"+ color + "\"><td class=\"minus\">";
         content += "<td class=\"minus\">";
         content += "<a href=\"#\" onclick=\"App.voteDown(this" + i + ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[1][i] + "</span>";
@@ -256,8 +259,14 @@ function renderPostFeed(result) {
         }
     }
 
+    var color;
     for (var i = 0; i < length; i++) {
-        content += "<td class=\"minus\">";
+        if(web3.toDecimal(web3.toHex(result[2][i])) <= web3.toDecimal(web3.toHex(result[1][i])))
+            color = "#d4ffd5";
+        else
+            color = "#e0c6c6";
+
+        content += "<tr style=\"background-color:"+ color + "\"><td class=\"minus\">";
         content += "<a href=\"#\" onclick=\"App.voteDown(this, " + i +
             ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[2][i] + "</span>";
@@ -268,7 +277,7 @@ function renderPostFeed(result) {
         content += "<a href=\"#\" onclick=\"App.voteUp(this, " + i + "," +
             result[4][i] + ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[1][i] + "</span>";
-        content += "</a></td>";
+        content += "</a></td></tr>";
 
         if (i == 0) {
             $('#postFeedTbl tbody').append(content);
@@ -277,4 +286,8 @@ function renderPostFeed(result) {
             $('#postFeedTbl tr:last').after(content);
         }
     }
+}
+
+function highlight() {
+
 }
