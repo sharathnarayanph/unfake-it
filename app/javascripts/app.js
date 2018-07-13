@@ -11,6 +11,12 @@ window.App = {
     },
     renderPost: function(el) {
         unfake.renderPost(el);
+    },
+    displayFeed: function() {
+        unfake.displayFeed();
+    },
+    displayAddNews: function() {
+        unfake.displayAddNews();
     }
 };
 

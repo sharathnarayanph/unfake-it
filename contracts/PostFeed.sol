@@ -29,7 +29,7 @@ contract PostFeed {
         return true;
     }
 
-    function getPostFeed(bytes32 postId)
+    function getFeed(bytes32 postId)
     public
     payable
     returns(bytes32[1000] ids, bytes32[1000] uVotes, bytes32[1000] dVotes,

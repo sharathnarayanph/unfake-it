@@ -1,10 +1,54 @@
+import * as helper from "./helper.js";
+import newsFeedABI from "../res/newsFeed.js";
 import $ from "jquery";
 
 export function initApp() {
-    $("#postFeed").hide();
+    displayFeed();
+
+    //Setup account number
+    if (web3 == undefined || !web3.eth.accounts.length) {
+        $("#acctName").val("Please enable Metamask");
+    }
+    else {
+        $("#acctName").val(web3.eth.coinbase);
+    }
 }
 
-export function vote(el) {
+export function postNews() {
+    var tag = new Array($("#tagName").value);
+    var news = new Array($("#newsContent").value);
+    var author = new Array($("#newsAuth").value);
+    var id = new Array(helper.hashCode(web3.eth.coinbase + new Date().toLocaleString()));
+    var dVotes = new Array("0");
+    var uVotes = new Array("0");
+    var bloom = new Array("0");
+
+    var instance = createNewsFeedInstance();
+    var estimatedGas = 6654755;
+
+    var txnObject = {
+        from: web3.eth.coinbase,
+        gas: estimatedGas
+    }
+
+    instance.addNews.sendTransaction(id, dVotes, uVotes, author, bloom, news,
+        tag, 1, txnObject, function (error, result) {
+            if (!error) {
+                console.warn(result);
+            }
+            else {
+                console.log("Error");
+            }
+        });
+
+    generateFeed();
+}
+
+export function voteUp(el) {
+    el.firstElementChild.textContent++;
+}
+
+export function voteDown(el) {
     el.firstElementChild.textContent++;
 }
 
@@ -12,9 +56,71 @@ export function renderPost(el) {
     $("#newsFeed").hide();
     $("#postFeed").show();
     $("#postData").text("Supporting information listed");
-    $("#postAuthor").text("jfakesupptr"); 
+    $("#postAuthor").text("jfakesupptr");
+}
+
+export function displayFeed() {
+    $("#postFeed").hide();
+    $("#newsFeed").show();
+    $("#addNews").hide();
+}
+
+export function displayAddNews() {
+    $("#postFeed").hide();
+    $("#newsFeed").hide();
+    $("#addNews").show();
+}
+
+function createNewsFeedInstance() {
+    return helper.createContractInstance(JSON.stringify(newsFeedABI.abi), newsFeedABI.address);
 }
 
 function generateFeed(dVotes, posts, authors, upvotes, length) {
+    displayFeed();
+
+    var instance = createNewsFeedInstance();
+
+    instance.getFeed.call(function (error, result) {
+        if (!error) {
+            configureList(result);
+        }
+        else {
+            console.log("Error");
+        }
+    });
+}
+
+//Remove extra 0s while converting back from bytes32
+function configureList(result) {
+    length = web3.toDecimal(web3.toHex(result[7]));
+
+    var regEx = /[0]+$/;
+    var content;
+
+    for (var i = 0; i < length; i++) {
+        for(var j = 0; j < 7; j++) {
+            result[j][i] = web3.toAscii(result[j][i].replace(regEx, ""));
+        }
+    }
+
+    for (var i =0; i < length; i++) {
+        content += "<td class=\"plus\">";
+        content += "<a onclick=\"App.voteDown(this" + result[0][i] + ")\" class=\"icon fa-minus-square\">";
+        content += "<span>" + result[1][i] + "</span>";
+        content += "</a></td>";
+        content += "<td>" + result[5][i] + "</td>";
+        content += "<td><a onclick=\"App.renderPost(this)\">" + result[6][i] + "</a></td>";
+        content += "<td>" + result[3][i] + "</td>";
+        content += "<td class=\"minus\">";
+        content += "<a onclick=\"App.voteUp(this" + result[0][i] + ")\" class=\"icon fa-minus-square\">";
+        content += "<span>" + result[2][i] + "</span>";
+        content += "</a></td>";
+    }
     
+    if(i == 0) {
+        $('#newsFeedTbl tbody').append(content);
+    }
+    else {
+        $('#newsFeedTbl tr:last').after(content);
+    }
 }

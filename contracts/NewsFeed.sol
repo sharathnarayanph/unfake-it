@@ -7,15 +7,17 @@ contract NewsFeed {
         bytes32[] uVotes;
         bytes32[] authors;
         bytes32[] bloomFilters;
+        bytes32[] news;
+        bytes32[] tags;
         uint count;
     }
 
     Feed private newsFeed;
 
     //For saving the news feed. Max limit of 1000 set accd to Solidity constraints
-    function saveFeed(bytes32[1000] ids, bytes32[1000] dVotes, 
-                      bytes32[1000] uVotes, bytes32[1000] authors,
-                      bytes32[1000] blooms, uint count)
+    function addNews(bytes32[1000] ids, bytes32[1000] dVotes, 
+                     bytes32[1000] uVotes, bytes32[1000] authors,
+                     bytes32[1000] blooms, bytes32[1000] news, bytes32[1000] tags, uint count)
     public
     returns (bool) {
         //Save the input in the Feed state
@@ -27,6 +29,8 @@ contract NewsFeed {
             newsFeed.uVotes.push(uVotes[i]);
             newsFeed.authors.push(authors[i]);
             newsFeed.bloomFilters.push(blooms[i]);
+            newsFeed.news.push(news[i]);
+            newsFeed.tags.push(tags[i]);
         }
 
         return true;
@@ -38,7 +42,7 @@ contract NewsFeed {
     payable
     returns(bytes32[1000] ids, bytes32[1000] dVotes, 
             bytes32[1000] uVotes, bytes32[1000] authors,
-            bytes32[1000] blooms, uint count) {
+            bytes32[1000] blooms, bytes32[1000] tags, bytes32[1000] news, uint count) {
         count = newsFeed.count;
 
         for(uint i = 0; i < count; i++) {
@@ -47,6 +51,8 @@ contract NewsFeed {
             uVotes[i] = newsFeed.uVotes[i];
             authors[i] = newsFeed.authors[i];
             blooms[i] = newsFeed.bloomFilters[i];
+            news[i] = newsFeed.news[i];
+            tags[i] = newsFeed.tags[i];
         }
     }
 

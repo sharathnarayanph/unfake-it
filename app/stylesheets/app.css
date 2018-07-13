@@ -2370,6 +2370,7 @@
 
 				ul.actions li:last-child {
 					padding-right: 0;
+					float: right;
 				}
 
 			ul.actions.small li {

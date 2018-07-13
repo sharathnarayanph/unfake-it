@@ -19,11 +19,11 @@
 		<div class="inner">
 			<header class="align-center">
 				<h2>Welcome</h2>
-				<p>Sharath Narayan</p>
+				<p id="acctName">Sharath Narayan</p>
 			</header>
 			<h2 id="elements" class="align-center">News Feed</h2>
 			<div id="newsFeed" class="table-wrapper">
-				<table class="alt">
+				<table id="newsFeedTbl" class="alt">
 					<thead>
 						<tr>
 							<th></th>
@@ -36,18 +36,18 @@
 					<tbody>
 						<tr>
 							<td class="plus">
-								<a href="#" onclick="App.vote(this)" class="icon fa-minus-square">
+								<a href="#" onclick="App.voteDown(this)" class="icon fa-minus-square">
 									<span>123</span>
 								</a>
 							</td>
 							<td>Politics</td>
 							<td>
-								<a onclick="App.renderPost(this)" href="#">World is controlled by 
-									illuminati</a>
+								<a onclick="App.renderPost(this)" href="#">World is controlled by illuminati
+								</a>
 							</td>
 							<td>jfaker</td>
 							<td class="minus">
-								<a href="#" onclick="App.vote(this)" class="icon fa-plus-square">
+								<a href="#" onclick="App.voteUp(this)" class="icon fa-plus-square">
 									<span>23</span>
 								</a>
 							</td>
@@ -69,6 +69,13 @@
 						</tr>
 					</tbody>
 				</table>
+				<div>
+					<ul class="actions">
+						<li>
+							<a onclick="App.displayAddNews()" class="button special">Post News</a>
+						</li>
+					</ul>
+				</div>
 			</div>
 			<div id="postFeed" class="table-wrapper">
 				<table class="alt">
@@ -111,6 +118,39 @@
 						</tr>
 					</tbody>
 				</table>
+				<div>
+					<ul class="actions">
+						<li>
+							<a onclick="App.displayFeed()" class="button special">Back</a>
+						</li>
+						<li>
+							<a onclick="App.addRow()" class="button special">Add Proof / Source</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div id="addNews">
+				<div>
+					<input type="text" id="tagName" value="" placeholder="Tag Name -  Eg.Politics, Sports" />
+				</div>
+				<br/>
+				<div>
+					<input type="text" id="newsContent" value="" placeholder="News Content" />
+				</div>
+				<br/>
+				<div>
+					<input type="text" id="newsAuth" value="" placeholder="Author Name" />
+				</div>
+				<br/>
+        <div>
+          <ul class="actions">
+            <li>
+					<a onclick="App.displayFeed()" class="button special">Back</a>
+            </li>
+            <li>
+					<a onclick="App.displayFeed()" class="button special">Submit</a>
+            </li>
+          </ul>
 			</div>
 		</div>
 	</section>
