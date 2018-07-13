@@ -124,7 +124,7 @@
 							<a onclick="App.displayFeed()" class="button special">Back</a>
 						</li>
 						<li>
-							<a onclick="App.addRow()" class="button special">Add Proof / Source</a>
+							<a onclick="App.displayAddPost()" class="button special">Add Proof / Source</a>
 						</li>
 					</ul>
 				</div>
@@ -142,17 +142,40 @@
 					<input type="text" id="newsAuth" value="" placeholder="Author Name" />
 				</div>
 				<br/>
-        <div>
-          <ul class="actions">
-            <li>
-					<a onclick="App.displayFeed()" class="button special">Back</a>
-            </li>
-            <li>
-					<a onclick="App.displayFeed()" class="button special">Submit</a>
-            </li>
-          </ul>
+				<div>
+					<ul class="actions">
+						<li>
+							<a onclick="App.displayFeed()" class="button special">Back</a>
+						</li>
+						<li>
+							<a onclick="App.displayFeed()" class="button special">Submit</a>
+						</li>
+					</ul>
+				</div>
 			</div>
-		</div>
+			<div id="addPost">
+				<div>
+					<input type="text" id="postContent" value="" placeholder="News Content" />
+				</div>
+				<br/>
+				<div>
+					<input type="text" id="postAuth" value="" placeholder="Author Name" />
+				</div>
+				<div>
+					<input type="text" id="mainNewsId" value="" placeholder="Main News ID" />
+				</div>
+				<br/>
+				<div>
+					<ul class="actions">
+						<li>
+							<a onclick="App.displayPostFeed()" class="button special">Back</a>
+						</li>
+						<li>
+							<a onclick="App.generatePost()" class="button special">Submit</a>
+						</li>
+					</ul>
+				</div>
+			</div>
 	</section>
 </body>
 

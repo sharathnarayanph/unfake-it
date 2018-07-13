@@ -45,6 +45,38 @@ export function postNews() {
     generateNewsFeed();
 }
 
+export function addPost() {
+    var post = $("#postContent").value;
+    var author = $("#postAuth").value;
+    var postId = $("#mainNewsId").value;
+    var bloom = "0";
+    var dVotes = "0";
+    var uVotes = "0";
+    var authAddr = web3.eth.coinbase;
+    var id = new Array(helper.hashCode(web3.eth.coinbase 
+                + new Date().toLocaleString()));
+
+    var instance = createPostFeedInstance();
+    var estimatedGas = 6654755;
+
+    var txnObject = {
+        from: web3.eth.coinbase,
+        gas: estimatedGas
+    }
+
+    instance.addPost.sendTransaction(postId, id, dVotes, uVotes, author, authAddr, 
+        bloom, post, txnObject, function (error, result) {
+            if (!error) {
+                console.warn(result);
+            }
+            else {
+                console.log("Error");
+            }
+        });
+
+    generatePost(this, postId);
+}
+
 export function voteUp(el, postId) {
     el.firstElementChild.textContent++;
 
@@ -57,7 +89,7 @@ export function voteUp(el, postId) {
     }
 
     instance.voteUp.sendTransaction(postId, el.firstElementChild.textContent,
-         function (error, result) {
+        function (error, result) {
             if (!error) {
                 console.warn(result);
             }
@@ -73,11 +105,11 @@ export function votePostUp(el, address) {
     var txnObject = {
         from: web3.eth.coinbase,
         to: address,
-        value: web3.toWei(0.05,'ether')
+        value: web3.toWei(0.05, 'ether')
     }
 
-    web3.eth.sendTransaction(txnObject, function(error, result) {
-        if(!error) {
+    web3.eth.sendTransaction(txnObject, function (error, result) {
+        if (!error) {
             console.warn('Thank you for your contribution');
         }
         else {
@@ -98,7 +130,7 @@ export function voteDown(el, postId) {
     }
 
     instance.voteDown.sendTransaction(postId, el.firstElementChild.textContent,
-         function (error, result) {
+        function (error, result) {
             if (!error) {
                 console.warn(result);
             }
@@ -109,10 +141,8 @@ export function voteDown(el, postId) {
 }
 
 export function generatePost(el, postId) {
-    $("#newsFeed").hide();
-    $("#addNews").hide();
-    $("#postFeed").show();
-    
+    displayPostFeed(postId);
+
     var instance = createPostFeedInstance();
 
     instance.getFeed.call(postId, function (error, result) {
@@ -125,16 +155,34 @@ export function generatePost(el, postId) {
     });
 }
 
+export function displayPostFeed(postId) {
+    $("#newsFeed").hide();
+    $("#addNews").hide();
+    $("#postFeed").show();
+    $("#addPost").hide();
+
+    $("#mainNewsId").text(postId);
+}
+
 export function displayFeed() {
     $("#postFeed").hide();
     $("#newsFeed").show();
     $("#addNews").hide();
+    $("#addPost").hide();
 }
 
 export function displayAddNews() {
     $("#postFeed").hide();
     $("#newsFeed").hide();
     $("#addNews").show();
+    $("#addPost").hide();
+}
+
+export function displayAddPost() {
+    $("#postFeed").hide();
+    $("#newsFeed").hide();
+    $("#addNews").hide();
+    $("#addPost").show();
 }
 
 function createNewsFeedInstance() {
@@ -168,12 +216,12 @@ function renderNewsFeed(result) {
 
     //Remove extra 0s while converting back from bytes32
     for (var i = 0; i < length; i++) {
-        for(var j = 0; j < 7; j++) {
+        for (var j = 0; j < 7; j++) {
             result[j][i] = web3.toAscii(result[j][i].replace(regEx, ""));
         }
     }
 
-    for (var i =0; i < length; i++) {
+    for (var i = 0; i < length; i++) {
         content += "<td class=\"minus\">";
         content += "<a href=\"#\" onclick=\"App.voteDown(this" + i + ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[1][i] + "</span>";
@@ -186,7 +234,7 @@ function renderNewsFeed(result) {
         content += "<span>" + result[2][i] + "</span>";
         content += "</a></td>";
 
-        if(i == 0) {
+        if (i == 0) {
             $('#newsFeedTbl tbody').append(content);
         }
         else {
@@ -203,26 +251,26 @@ function renderPostFeed(result) {
 
     //Remove extra 0s while converting back from bytes32
     for (var i = 0; i < length; i++) {
-        for(var j = 0; j < 7; j++) {
+        for (var j = 0; j < 7; j++) {
             result[j][i] = web3.toAscii(result[j][i].replace(regEx, ""));
         }
     }
 
-    for (var i =0; i < length; i++) {
+    for (var i = 0; i < length; i++) {
         content += "<td class=\"minus\">";
-        content += "<a href=\"#\" onclick=\"App.voteDown(this, " + i + 
+        content += "<a href=\"#\" onclick=\"App.voteDown(this, " + i +
             ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[2][i] + "</span>";
         content += "</a></td>";
         content += "<td>" + result[6][i] + "</td>";
         content += "<td>" + result[3][i] + "</td>";
         content += "<td class=\"plus\">";
-        content += "<a href=\"#\" onclick=\"App.voteUp(this, " + i + "," + 
+        content += "<a href=\"#\" onclick=\"App.voteUp(this, " + i + "," +
             result[4][i] + ")\" class=\"icon fa-minus-square\">";
         content += "<span>" + result[1][i] + "</span>";
         content += "</a></td>";
 
-        if(i == 0) {
+        if (i == 0) {
             $('#postFeedTbl tbody').append(content);
         }
         else {

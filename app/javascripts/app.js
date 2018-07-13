@@ -6,17 +6,26 @@ window.App = {
     start: function () {
         unfake.initApp();
     },
-    vote: function(el) {
-        unfake.vote(el);
+    voteUp: function(el) {
+        unfake.voteUp(el);
     },
-    renderPost: function(el) {
-        unfake.renderPost(el);
+    voteDown: function(el) {
+        unfake.voteDown(el);
+    },
+    generatePost: function(el) {
+        unfake.generatePost(el);
     },
     displayFeed: function() {
         unfake.displayFeed();
     },
     displayAddNews: function() {
         unfake.displayAddNews();
+    },
+    displayAddPost: function() {
+        unfake.displayAddPost();
+    },
+    displayPostFeed: function() {
+        unfake.displayPostFeed();
     }
 };
 
