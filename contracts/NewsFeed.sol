@@ -49,4 +49,28 @@ contract NewsFeed {
             blooms[i] = newsFeed.bloomFilters[i];
         }
     }
+
+    //For upvoting the news post
+    function voteUp(uint postPos, bytes32 newVal)
+    public
+    payable
+    returns(bytes32) {
+        require(newsFeed.count != 0X0);
+
+        newsFeed.uVotes[postPos] = newVal;
+
+        return newVal;
+    }
+
+    //For downvoting the news post
+    function voteDown(uint postPos, bytes32 newVal)
+    public
+    payable
+    returns(bytes32) {
+        require(newsFeed.count != 0X0);
+
+        newsFeed.dVotes[postPos] = newVal;
+
+        return newVal;
+    }
 }

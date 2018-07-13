@@ -48,4 +48,28 @@ contract PostFeed {
             blooms[i] = postFeed[postId].bloomFilters[i];
         }                      
     }
+
+    //For upvoting the proof post
+    function voteUp(bytes32 postId, uint postPos, bytes32 newVal)
+    public
+    payable
+    returns(bytes32) {
+        require(postFeed[postId].count != 0X0);
+
+        postFeed[postId].uVotes[postPos] = newVal;
+
+        return newVal;
+    }
+
+    //For downvoting the proof post
+    function voteDown(bytes32 postId, uint postPos, bytes32 newVal)
+    public
+    payable
+    returns(bytes32) {
+        require(postFeed[postId].count != 0X0);
+
+        postFeed[postId].dVotes[postPos] = newVal;
+
+        return newVal;
+    }
 }
